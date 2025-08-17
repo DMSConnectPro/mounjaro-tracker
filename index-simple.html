@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mounjaro Tracker</title>
+    <meta name="theme-color" content="#667eea">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        /* DESKTOP RESPONSIVE STYLES */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1400px;
+            }
+        }            
+            .desktop-grid {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 20px;
+            }
+            
+            .content {
+                padding: 40px !important;
+            }
+            
+            .tabs {
+                font-size: 1.1em;
+            }
+            
+            .dose-preset {
+                grid-template-columns: repeat(6, 1fr) !important;
+            }
+            
+            input, select, button {
+                font-size: 16px !important;
+                padding: 15px !important;
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 { font-size: 2em; margin-bottom: 5px; }
+        .header p { opacity: 0.9; }        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e1e8ed;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            background: none;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #ff6b6b;
+            border-bottom: 3px solid #ff6b6b;
+        }
+        
+        .content {
+            padding: 20px;
+            display: none;
+        }
+        
+        .content.active { display: block; }
+        
+        .calculator {
+            display: grid;
+            gap: 15px;
+        }        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        button {
+            padding: 12px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        
+        button:active { transform: scale(0.98); }
+        
+        .dose-preset {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .preset-btn {
+            padding: 12px;
+            background: #e3f2fd;
+            color: #1976d2;            border: 2px solid #1976d2;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        
+        .preset-btn.selected {
+            background: #1976d2;
+            color: white;
+        }
+        
+        .result {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        
+        .history-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .delete-btn {
+            background: #ff4444;
+            color: white;
+            padding: 5px 10px;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+        
+        #weightChart { margin-top: 20px; height: 300px; }    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💊 Mounjaro Tracker</h1>
+            <p>Complete Health Tracking Solution</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab(event, 'calculator')">💉 Calculator</button>
+            <button class="tab" onclick="switchTab(event, 'doses')">📅 Doses</button>
+            <button class="tab" onclick="switchTab(event, 'weight')">⚖️ Weight</button>
+            <button class="tab" onclick="switchTab(event, 'food')">🍽️ Food</button>
+        </div>
+        
+        <div id="calculator" class="content active">
+            <h3>Dose Calculator</h3>
+            <div class="desktop-grid">
+                <div>
+                    <div class="calculator">
+                        <input type="number" id="vialSize" placeholder="Vial size (mg)" value="10">
+                        <input type="number" id="vialVolume" placeholder="Volume (ml)" value="2">
+                        <input type="number" id="targetDose" placeholder="Target dose (mg)" value="5">
+                        <select id="syringeType">
+                            <option value="100">100 unit (1ml)</option>
+                            <option value="50">50 unit (0.5ml)</option>
+                            <option value="30">30 unit (0.3ml)</option>
+                        </select>
+                    </div>
+                </div>                <div>
+                    <div class="dose-preset">
+                        <button class="preset-btn" onclick="setDose(2.5)">2.5mg</button>
+                        <button class="preset-btn" onclick="setDose(5)">5mg</button>
+                        <button class="preset-btn" onclick="setDose(7.5)">7.5mg</button>
+                        <button class="preset-btn" onclick="setDose(10)">10mg</button>
+                        <button class="preset-btn" onclick="setDose(12.5)">12.5mg</button>
+                        <button class="preset-btn" onclick="setDose(15)">15mg</button>
+                    </div>
+                    <button onclick="calculate()">Calculate Clicks</button>
+                    <div id="result" class="result" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="doses" class="content">
+            <h3>Dose Tracking</h3>
+            <div class="desktop-grid">
+                <div class="calculator">
+                    <input type="date" id="doseDate">
+                    <input type="number" id="doseAmount" placeholder="Dose (mg)">
+                    <textarea id="doseNotes" placeholder="Notes (optional)" style="width:100%;padding:12px;border:2px solid #e1e8ed;border-radius:8px;"></textarea>
+                    <button onclick="addDose()">Add Dose</button>
+                </div>
+                <div id="doseHistory"></div>
+            </div>
+        </div>
+        
+        <div id="weight" class="content">
+            <h3>Weight Tracking</h3>            <div class="desktop-grid">
+                <div>
+                    <div class="calculator">
+                        <input type="date" id="weightDate">
+                        <input type="number" id="weightValue" step="0.1" placeholder="Weight (kg)">
+                        <input type="number" id="goalWeight" step="0.1" placeholder="Goal weight (kg)">
+                        <button onclick="addWeight()">Add Weight</button>
+                    </div>
+                    <div id="weightHistory"></div>
+                </div>
+                <div>
+                    <div id="weightStats"></div>
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div id="food" class="content">
+            <h3>Food Tracking</h3>
+            <div class="desktop-grid">
+                <div class="calculator">
+                    <input type="date" id="foodDate">
+                    <input type="text" id="foodName" placeholder="Food name">
+                    <input type="number" id="foodCalories" placeholder="Calories">
+                    <textarea id="foodNotes" placeholder="Notes" style="width:100%;padding:12px;border:2px solid #e1e8ed;border-radius:8px;"></textarea>
+                    <button onclick="addFood()">Add Food</button>
+                </div>
+                <div id="foodHistory"></div>
+            </div>
+        </div>    </div>
+    
+    <script>
+        // Data structure
+        let data = {
+            doses: JSON.parse(localStorage.getItem('doses') || '[]'),
+            weights: JSON.parse(localStorage.getItem('weights') || '[]'),
+            foods: JSON.parse(localStorage.getItem('foods') || '[]')
+        };
+        
+        // Tab switching
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            if (tabName === 'weight') renderWeightChart();
+        }
+        
+        // Calculator
+        function setDose(dose) {
+            document.getElementById('targetDose').value = dose;
+            document.querySelectorAll('.preset-btn').forEach(btn => {
+                btn.classList.remove('selected');
+                if (btn.textContent === dose + 'mg') btn.classList.add('selected');
+            });
+        }
+        
+        function calculate() {
+            const vialSize = parseFloat(document.getElementById('vialSize').value);            const vialVolume = parseFloat(document.getElementById('vialVolume').value);
+            const targetDose = parseFloat(document.getElementById('targetDose').value);
+            const syringeType = parseFloat(document.getElementById('syringeType').value);
+            
+            const concentration = vialSize / vialVolume;
+            const volumeNeeded = targetDose / concentration;
+            const unitsNeeded = volumeNeeded * syringeType;
+            const clicksNeeded = unitsNeeded / 2;
+            
+            document.getElementById('result').style.display = 'block';
+            document.getElementById('result').innerHTML = `
+                <h4>Results:</h4>
+                <p><strong style="font-size:24px;color:#667eea">${clicksNeeded.toFixed(1)} clicks</strong></p>
+                <p>Volume needed: ${volumeNeeded.toFixed(3)}ml</p>
+                <p>Units needed: ${unitsNeeded.toFixed(1)}</p>
+            `;
+        }
+        
+        // Dose tracking
+        function addDose() {
+            const date = document.getElementById('doseDate').value || new Date().toISOString().split('T')[0];
+            const amount = parseFloat(document.getElementById('doseAmount').value);
+            const notes = document.getElementById('doseNotes').value;
+            
+            if (!amount) {
+                alert('Please enter a dose amount');
+                return;
+            }
+            
+            data.doses.push({                id: Date.now(),
+                date: date,
+                amount: amount,
+                notes: notes
+            });
+            
+            data.doses.sort((a, b) => new Date(b.date) - new Date(a.date));
+            localStorage.setItem('doses', JSON.stringify(data.doses));
+            
+            document.getElementById('doseAmount').value = '';
+            document.getElementById('doseNotes').value = '';
+            renderDoses();
+        }
+        
+        function renderDoses() {
+            const html = data.doses.length ? 
+                data.doses.map(d => `
+                    <div class="history-item">
+                        <strong>${d.date}</strong> - ${d.amount}mg
+                        ${d.notes ? `<br><small>${d.notes}</small>` : ''}
+                        <br><button class="delete-btn" onclick="deleteDose(${d.id})">Delete</button>
+                    </div>
+                `).join('') : '<p>No doses recorded yet</p>';
+            document.getElementById('doseHistory').innerHTML = html;
+        }
+        
+        function deleteDose(id) {
+            if (confirm('Delete this dose?')) {
+                data.doses = data.doses.filter(d => d.id !== id);
+                localStorage.setItem('doses', JSON.stringify(data.doses));
