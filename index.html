@@ -3,24 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mounjaro Tracker - Cloud Sync Edition</title>
+    <title>Mounjaro Tracker - Cloud Sync</title>
     <meta name="theme-color" content="#667eea">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
-            padding: 10px;
+            padding: 20px;
         }
-
+        
         .container {
             max-width: 500px;
             margin: 0 auto;
@@ -29,3 +23,74 @@
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             overflow: hidden;
         }
+        
+        /* DESKTOP RESPONSIVE - THIS IS KEY! */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 1400px;
+            }
+                        
+            .desktop-layout {
+                display: grid;
+                grid-template-columns: 1fr 2fr;
+                gap: 30px;
+            }
+            
+            .content {
+                padding: 40px !important;
+            }
+            
+            .dose-preset {
+                grid-template-columns: repeat(6, 1fr) !important;
+            }
+            
+            input, select, button {
+                font-size: 16px !important;
+                padding: 15px !important;
+            }
+            
+            #weightChart {
+                height: 400px !important;
+            }
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .sync-status {            font-size: 14px;
+            margin-top: 10px;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            border: none;
+            background: none;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            color: #ff6b6b;
+            border-bottom: 3px solid #ff6b6b;
+        }
+        
+        .content {
+            padding: 20px;
+            display: none;
