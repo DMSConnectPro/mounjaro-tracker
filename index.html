@@ -1122,7 +1122,10 @@
 
             // Create points for the weight line - now using chronologically sorted data
             const points = chartWeights.map((weight, index) => {
-                const x = (index / (chartWeights.length - 1)) * 85 + 10;
+                // For proper spacing, use index directly when we have multiple points
+                const x = chartWeights.length > 1 
+                    ? (index / (chartWeights.length - 1)) * 85 + 10
+                    : 47.5; // Center single point
                 const y = 90 - ((weight.weight - minWeight) / range) * 70;
                 return `${x},${y}`;
             }).join(' ');
@@ -1154,21 +1157,25 @@
                     ${goalLine}
                     <polyline points="${points}" 
                               fill="none" 
-                              stroke="#667eea" 
-                              stroke-width="3"
+                              stroke="#ff4444" 
+                              stroke-width="2.5"
                               stroke-linecap="round"
                               stroke-linejoin="round"/>
                     ${chartWeights.map((weight, index) => {
-                        const x = (index / (chartWeights.length - 1)) * 85 + 10;
+                        const x = chartWeights.length > 1 
+                            ? (index / (chartWeights.length - 1)) * 85 + 10
+                            : 47.5;
                         const y = 90 - ((weight.weight - minWeight) / range) * 70;
                         return `
-                            <circle cx="${x}%" cy="${y}%" r="4" fill="#667eea" stroke="white" stroke-width="2"/>
+                            <circle cx="${x}%" cy="${y}%" r="5" fill="#667eea" stroke="white" stroke-width="2"/>
                             <text x="${x}%" y="${y - 8}%" fill="#333" font-size="10" text-anchor="middle" font-weight="bold">${weight.weight}</text>
                         `;
                     }).join('')}
                     ${chartWeights.map((weight, index) => {
                         if (index % Math.ceil(chartWeights.length / 4) === 0 || index === chartWeights.length - 1) {
-                            const x = (index / (chartWeights.length - 1)) * 85 + 10;
+                            const x = chartWeights.length > 1 
+                                ? (index / (chartWeights.length - 1)) * 85 + 10
+                                : 47.5;
                             const date = new Date(weight.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
                             return `<text x="${x}%" y="98%" fill="#666" font-size="9" text-anchor="middle">${date}</text>`;
                         }
